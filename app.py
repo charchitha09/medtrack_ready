@@ -23,8 +23,8 @@ AWS_REGION_NAME = os.environ.get('AWS_REGION_NAME', 'ap-south-1')
 # Email config
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-SENDER_EMAIL = 'sairaviteja478@gmail.com'  # Your email
-SENDER_PASSWORD = 'uhcy crru tgex dnjg'     # App password
+SENDER_EMAIL = 'vajjalacharchitha@gmail.com'  # Your email
+SENDER_PASSWORD = '1234'     # App password
 ENABLE_EMAIL = True
 # Email Configuration
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
@@ -34,7 +34,7 @@ SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD')
 ENABLE_EMAIL = os.environ.get('ENABLE_EMAIL', 'False').lower() == 'true'
 
 # SNS Topic ARN
-app.config['SNS_TOPIC_ARN'] = 'arn:aws:sns:ap-south-1:940482422578:Medtrack:2c78944f-bb5d-4fb1-9982-74334bdd772b'
+app.config['SNS_TOPIC_ARN'] = 'arn:aws:sns:us-east-1:897722694280:medin'
 # Table Names from .env
 USERS_TABLE_NAME = os.environ.get('USERS_TABLE_NAME', 'UsersTable')
 APPOINTMENTS_TABLE_NAME = os.environ.get('APPOINTMENTS_TABLE_NAME', 'AppointmentsTable')
