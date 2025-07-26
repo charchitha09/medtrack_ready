@@ -167,7 +167,7 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------
 # Helper Functions
-@@ -148,15 +71,14 @@ def is_logged_in():
+-148,15 +71,14 @@ def is_logged_in():
 def get_user_role(email):
 try:
 response = user_table.get_item(Key={'email': email})
