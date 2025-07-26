@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}View Appointment{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">Appointment Details</h2>
+    
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Patient Information</h3>
+        <p><strong>Name:</strong> {{ appointment.patient_name }}</p>
+        <p><strong>Status:</strong> 
+            {% if appointment.status == 'pending' %}
+            <span style="color: #e67e22; font-weight: bold;">{{ appointment.status|capitalize }}</span>
+            {% else %}
+            <span style="color: #27ae60; font-weight: bold;">{{ appointment.status|capitalize }}</span>
+            {% endif %}
+        </p>
+        <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+        <p><strong>Created:</strong> {{ appointment.created_at }}</p>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Patient Symptoms</h3>
+        <p>{{ appointment.symptoms }}</p>
+    </div>
+
+    {% if appointment.status == 'pending' %}
+    <form method="POST" action="{{ url_for('submit_diagnosis', appointment_id=appointment.appointment_id) }}">
+        <div class="form-group">
+            <label for="diagnosis">Diagnosis</label>
+            <textarea id="diagnosis" name="diagnosis" rows="4" required placeholder="Enter your diagnosis"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="treatment_plan">Treatment Plan</label>
+            <textarea id="treatment_plan" name="treatment_plan" rows="4" required placeholder="Describe the treatment plan"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="prescription">Prescription</label>
+            <textarea id="prescription" name="prescription" rows="4" required placeholder="Write prescription details"></textarea>
+        </div>
+        
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn-success">Submit Diagnosis</button>
+            <a href="{{ url_for('dashboard') }}" class="btn" style="margin-left: 1rem;">Back to Dashboard</a>
+        </div>
+    </form>
+    {% else %}
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Your Diagnosis</h3>
+        <p>{{ appointment.diagnosis }}</p>
+        
+        <h3 style="color: #2c3e50; margin: 1rem 0 0.5rem;">Treatment Plan</h3>
+        <p>{{ appointment.treatment_plan }}</p>
+        
+        <h3 style="color: #2c3e50; margin: 1rem 0 0.5rem;">Prescription</h3>
+        <p>{{ appointment.prescription }}</p>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

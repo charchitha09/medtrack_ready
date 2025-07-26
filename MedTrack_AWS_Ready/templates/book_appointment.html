@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block styles %}
+<style>
+    .book-appointment-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .doctor-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .doctor-card {
+        border: 2px solid #eee;
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .doctor-card.selected {
+        border-color: #3498db;
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .doctor-avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3498db;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .doctor-name {
+        font-weight: 500;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .doctor-specialization {
+        color: #7f8c8d;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    
+    .appointment-form {
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .datetime-picker {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .datetime-picker .form-group {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="book-appointment-container">
+    <div class="card">
+        <h2>Book an Appointment</h2>
+        <p>Select a doctor and provide your symptoms to book a consultation.</p>
+        
+        <form method="POST" action="{{ url_for('book_appointment') }}">
+            <h3>Select Doctor</h3>
+            <div class="doctor-selector">
+                {% for doctor in doctors %}
+                    <div class="doctor-card" onclick="selectDoctor('{{ doctor.email }}', this)">
+                        <div class="doctor-avatar">
+                            {{ doctor.name[0] }}
+                        </div>
+                        <h4 class="doctor-name">Dr. {{ doctor.name }}</h4>
+                        <p class="doctor-specialization">{{ doctor.specialization|default('General Medicine') }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <input type="hidden" name="doctor_email" id="selected_doctor" required>
+            
+            <div class="appointment-form">
+                <div class="datetime-picker">
+                    <div class="form-group">
+                        <label for="appointment_date">Appointment Date</label>
+                        <input type="date" id="appointment_date" name="appointment_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment_time">Appointment Time</label>
+                        <input type="time" id="appointment_time" name="appointment_time" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="symptoms">Symptoms/Reason for Visit</label>
+                    <textarea id="symptoms" name="symptoms" rows="4" required placeholder="Please describe your symptoms or reason for consultation..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Book Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectDoctor(email, element) {
+        // Update selected doctor
+        document.getElementById('selected_doctor').value = email;
+        
+        // Update visual selection
+        const cards = document.querySelectorAll('.doctor-card');
+        cards.forEach(card => card.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+    
+    // Set today as minimum date
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('appointment_date').setAttribute('min', today);
+    };
+    
+    // Check for URL parameter to pre-select doctor
+    window.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const doctorParam = urlParams.get('doctor');
+        
+        if (doctorParam) {
+            const doctorCards = document.querySelectorAll('.doctor-card');
+            doctorCards.forEach(card => {
+                if (card.onclick.toString().includes(doctorParam)) {
+                    selectDoctor(doctorParam, card);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

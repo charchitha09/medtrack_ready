@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .welcome-section {
+        background: linear-gradient(to right, #2c3e50, #3498db);
+        color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .stat-card h3 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #3498db;
+    }
+    
+    .appointments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .search-form {
+        display: flex;
+        max-width: 500px;
+    }
+    
+    .search-form input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+    }
+    
+    .search-form button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background-color: #f39c12;
+        color: white;
+    }
+    
+    .status-completed {
+        background-color: #27ae60;
+        color: white;
+    }
+    
+    .appointment-date {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+    
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid #3498db;
+        color: #3498db;
+    }
+    
+    .btn-outline:hover {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tab {
+        padding: 0.8rem 1.5rem;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+        border-bottom-color: #3498db;
+        color: #3498db;
+        font-weight: 500;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1>Welcome, Dr. {{ session.get('name', 'Doctor') }}</h1>
+    <p>Manage your appointments and patient consultations from your dashboard.</p>
+</div>
+
+<div class="dashboard-header">
+    <h2>Doctor Dashboard</h2>
+    <div class="actions">
+        <form action="{{ url_for('search_appointments') }}" method="POST" class="search-form">
+            <input type="text" name="search_term" placeholder="Search patient name...">
+            <button type="submit" class="btn">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>{{ appointments|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+        <p>Pending Appointments</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ appointments|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+        <p>Completed Appointments</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ appointments|length }}</h3>
+        <p>Total Appointments</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('pending')">Pending Appointments</div>
+        <div class="tab" onclick="switchTab('completed')">Completed Appointments</div>
+        <div class="tab" onclick="switchTab('all')">All Appointments</div>
+    </div>
+    
+    <div id="pending" class="tab-content active">
+        {% set pending_appointments = appointments|selectattr('status', 'equalto', 'pending')|list %}
+        {% if pending_appointments|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Symptoms</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in pending_appointments %}
+                        <tr>
+                            <td>{{ appointment.patient_name }}</td>
+                            <td class="appointment-date">{{ appointment.appointment_date }}</td>
+                            <td>{{ appointment.symptoms }}</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <a href="{{ url_for('view_appointment', appointment_id=appointment.appointment_id) }}" class="btn btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No pending appointments found.</p>
+        {% endif %}
+    </div>
+    
+    <div id="completed" class="tab-content">
+        {% set completed_appointments = appointments|selectattr('status', 'equalto', 'completed')|list %}
+        {% if completed_appointments|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Diagnosis</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in completed_appointments %}
+                        <tr>
+                            <td>{{ appointment.patient_name }}</td>
+                            <td class="appointment-date">{{ appointment.appointment_date }}</td>
+                            <td>{{ appointment.diagnosis|default('N/A') }}</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <a href="{{ url_for('view_appointment', appointment_id=appointment.appointment_id) }}" class="btn btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No completed appointments found.</p>
+        {% endif %}
+    </div>
+    
+    <div id="all" class="tab-content">
+        {% if appointments|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Symptoms</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                        <tr>
+                            <td>{{ appointment.patient_name }}</td>
+                            <td class="appointment-date">{{ appointment.appointment_date }}</td>
+                            <td>{{ appointment.symptoms }}</td>
+                            <td>
+                                {% if appointment.status == 'pending' %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                {% else %}
+                                    <span class="status-badge status-completed">Completed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('view_appointment', appointment_id=appointment.appointment_id) }}" class="btn btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No appointments found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Update tab selection
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Show selected content
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+</script>
+{% endblock %}

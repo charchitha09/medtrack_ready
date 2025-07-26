@@ -1,0 +1,50 @@
+<h1>View Reports (Demo)</h1>{% extends "base.html" %}
+
+{% block title %}View Appointment{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">Appointment Details</h2>
+    
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Doctor Information</h3>
+        <p><strong>Doctor:</strong> Dr. {{ appointment.doctor_name }}</p>
+        <p><strong>Status:</strong> 
+            {% if appointment.status == 'pending' %}
+            <span style="color: #e67e22; font-weight: bold;">{{ appointment.status|capitalize }}</span>
+            {% else %}
+            <span style="color: #27ae60; font-weight: bold;">{{ appointment.status|capitalize }}</span>
+            {% endif %}
+        </p>
+        <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+        <p><strong>Created:</strong> {{ appointment.created_at }}</p>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Your Symptoms</h3>
+        <p>{{ appointment.symptoms }}</p>
+    </div>
+
+    {% if appointment.status == 'completed' %}
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Doctor's Diagnosis</h3>
+        <p>{{ appointment.diagnosis }}</p>
+        
+        <h3 style="color: #2c3e50; margin: 1rem 0 0.5rem;">Treatment Plan</h3>
+        <p>{{ appointment.treatment_plan }}</p>
+        
+        <h3 style="color: #2c3e50; margin: 1rem 0 0.5rem;">Prescription</h3>
+        <p>{{ appointment.prescription }}</p>
+    </div>
+    {% else %}
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: center;">
+        <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Pending Diagnosis</h3>
+        <p>Your doctor has not yet provided a diagnosis. Please check back later.</p>
+    </div>
+    {% endif %}
+    
+    <div style="text-align: center;">
+        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block styles %}
+<style>
+    .login-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-options {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .login-option {
+        flex: 1;
+        text-align: center;
+        padding: 0.8rem;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .login-option.active {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .login-form {
+        margin-top: 1.5rem;
+    }
+    
+    .forgot-password {
+        text-align: right;
+        margin-bottom: 1rem;
+    }
+    
+    .forgot-password a {
+        color: #3498db;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card">
+        <h2>Login to Your Account</h2>
+        <p>Access your healthcare dashboard to manage appointments.</p>
+        
+        <div class="login-options">
+            <div class="login-option active" onclick="selectLoginType('patient', this)">
+                Patient
+            </div>
+            <div class="login-option" onclick="selectLoginType('doctor', this)">
+                Doctor
+            </div>
+        </div>
+        
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <input type="hidden" name="role" id="roleInput" value="patient">
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="forgot-password">
+                <a href="#">Forgot password?</a>
+            </div>
+            
+            <button type="submit" class="btn">Login</button>
+            
+            <p style="margin-top: 1rem; text-align: center;">
+                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectLoginType(type, element) {
+        // Update visual selection
+        const options = document.querySelectorAll('.login-option');
+        options.forEach(option => option.classList.remove('active'));
+        element.classList.add('active');
+        
+        // Update hidden input
+        document.getElementById('roleInput').value = type;
+    }
+</script>
+{% endblock %}
